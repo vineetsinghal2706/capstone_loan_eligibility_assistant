@@ -1,0 +1,18 @@
+# ClaimAssist API v5 + LoanAssist v2 — pinned dependencies
+fastapi==0.115.6
+uvicorn==0.32.1
+httpx==0.28.1
+pydantic==2.10.3
+chromadb==1.5.9
+python-multipart==0.0.20
+openai==1.57.4
+prometheus-client==0.21.1
+# NEW in v2: YAML parsing for front-matter in policy documents
+pyyaml==6.0.2
+# NEW in v2: .env loading for local dev
+python-dotenv==1.0.1
+# NEW in v2: pytest for unit tests
+pytest==8.3.3
+pytest-asyncio==0.24.0
+protobuf>=5.26.1,<6
+googleapis-common-protos<1.67.0

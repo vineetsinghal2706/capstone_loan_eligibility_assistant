@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoanAssist v3 — Capstone Executive Deck (EXL AI Services)</title>
+  <style>
+    :root {
+      --navy: #0f172a;
+      --navy-light: #1e293b;
+      --blue: #1d4ed8;
+      --blue-accent: #2563eb;
+      --blue-soft: #eff6ff;
+      --blue-border: #bfdbfe;
+      --orange: #ea580c;
+      --emerald: #15803d;
+      --emerald-soft: #f0fdf4;
+      --emerald-border: #bbf7d0;
+      --red: #b91c1c;
+      --red-soft: #fef2f2;
+      --red-border: #fecaca;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --amber-border: #fde68a;
+      --purple: #6d28d9;
+      --purple-soft: #f5f3ff;
+      --purple-border: #ddd6fe;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-900: #0f172a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: #0f172a;
+      color: var(--slate-900);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 24px 32px;
+    }
+
+    /* Top Control Bar */
+    .deck-toolbar {
+      width: 100%;
+      max-width: 1280px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 10px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: #f8fafc;
+    }
+    .brand-group { display: flex; align-items: center; gap: 12px; }
+    .brand-badge {
+      background: var(--orange);
+      color: #fff;
+      font-weight: 800;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .brand-title { font-size: 14px; font-weight: 700; color: #fff; }
+    .brand-sub { font-size: 11px; color: #94a3b8; }
+
+    .tab-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tab-btn {
+      background: transparent;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { background: #334155; color: #fff; }
+    .tab-btn.active {
+      background: var(--blue-accent);
+      color: #fff;
+      border-color: var(--blue-accent);
+    }
+
+    .nav-group { display: flex; align-items: center; gap: 8px; }
+    .ctrl-btn {
+      background: #334155;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .ctrl-btn:hover { background: #475569; }
+
+    /* Slide Canvas */
+    .slide {
+      width: 100%;
+      max-width: 1280px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+      padding: 36px 44px;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 700px;
+      position: relative;
+      border-top: 6px solid var(--blue);
+    }
+    .slide.active { display: flex; }
+
+    /* Slide Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid var(--slate-200);
+      padding-bottom: 16px;
+      margin-bottom: 22px;
+    }
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 4px;
+    }
+    .slide-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+    }
+    .slide-subtitle {
+      font-size: 14px;
+      color: var(--slate-600);
+      margin-top: 4px;
+    }
+    .slide-num {
+      font-size: 26px;
+      font-weight: 900;
+      color: #cbd5e1;
+      font-family: monospace;
+      white-space: nowrap;
+    }
+
+    /* Grids & Cards */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+
+    .card {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .card-blue { background: var(--blue-soft); border-color: var(--blue-border); }
+    .card-emerald { background: var(--emerald-soft); border-color: var(--emerald-border); }
+    .card-red { background: var(--red-soft); border-color: var(--red-border); }
+    .card-amber { background: var(--amber-soft); border-color: var(--amber-border); }
+    .card-purple { background: var(--purple-soft); border-color: var(--purple-border); }
+
+    .card-tag {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .card h3 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+    .card p, .card li { font-size: 12.5px; color: var(--slate-700); line-height: 1.5; }
+    .card ul { padding-left: 16px; }
+    .card li { margin-bottom: 4px; }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11.5px;
+      background: rgba(15, 23, 42, 0.07);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th {
+      text-align: left;
+      padding: 8px 10px;
+      background: var(--navy);
+      color: #fff;
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--slate-200);
+      color: var(--slate-700);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    .kpi-value { font-size: 26px; font-weight: 900; color: var(--navy); margin: 4px 0; }
+
+    .slide-footer {
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--slate-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      color: var(--slate-600);
+    }
+
+    .speaker-box {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-left: 4px solid var(--blue-accent);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--slate-700);
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .deck-toolbar, .speaker-box { display: none !important; }
+      .slide {
+        display: flex !important;
+        box-shadow: none;
+        border: 1px solid #cbd5e1;
+        border-top: 6px solid var(--blue);
+        page-break-after: always;
+        margin-bottom: 0;
+        min-height: 95vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toolbar -->
+  <div class="deck-toolbar">
+    <div class="brand-group">
+      <span class="brand-badge">03 BANKING</span>
+      <div>
+        <div class="brand-title">LoanAssist v3 — Executive & Capstone Presentation</div>
+        <div class="brand-sub">EXL AI Services · RAG over Versioned Policies · Deterministic Rules · CI/CD Eval Gates</div>
+      </div>
+    </div>
+
+    <div class="tab-group">
+      <button class="tab-btn active" onclick="showSlide(0)">01 · Problem & Business Case</button>
+      <button class="tab-btn" onclick="showSlide(1)">02 · Architecture & Scope</button>
+      <button class="tab-btn" onclick="showSlide(2)">03 · E2E Workflow & Demo</button>
+      <button class="tab-btn" onclick="showSlide(3)">04 · Evaluation, Safety & Audit</button>
+      <button class="tab-btn" onclick="showSlide(4)">05 · Roadmap & Rubric</button>
+    </div>
+
+    <div class="nav-group">
+      <button class="ctrl-btn" onclick="prev()">◀ Prev</button>
+      <span id="counter" style="font-size:12px;font-family:monospace;padding:0 6px;">1 / 5</span>
+      <button class="ctrl-btn" onclick="next()">Next ▶</button>
+      <button class="ctrl-btn" style="background:#2563eb;border-color:#2563eb;" onclick="window.print()">🖨️ Print / Save PDF</button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- SLIDE 01: PROBLEM STATEMENT & BUSINESS CASE                           -->
+  <!-- ===================================================================== -->
+  <section class="slide active">
+    <div>
+      <div class="slide-header">
+        <div>
+          <div class="eyebrow">CAPSTONE · GENAI & RAG · LOANASSIST V3 · SEGMENT 1 (3 MIN)</div>
+          <h1 class="slide-title">Loan Eligibility Assistant — Problem & Business Case</h1>
+          <p class="slide-subtitle">Pre-qualification conversations consume agent time and produce inconsistent answers across changing policy versions.</p>
+        </div>
+        <div class="slide-num">SLIDE 01</div>
+      </div>
+
+      <div class="grid-3" style="margin-bottom: 18px;">
+        <div class="card">
+          <span class="card-tag" style="color:var(--amber);">1 · Operational Pain</span>
+          <h3>Multi-Document, Moving Rules</h3>
+          <p>Eligibility depends on 9–11 interacting criteria (Age, Income, Vintage, CIBIL, FOIR, LTV, Asset Type) spread across product policies (<code>personal_loan_v1/v2</code>, <code>home_loan_v1</code>, <code>auto_loan_v1</code>) that update on independent cycles.</p>
+        </div>
+
+        <div class="card card-red">
+          <span class="card-tag" style="color:var(--red);">2 · Cost of the Status Quo</span>
+          <h3>Complaints vs. Lost Lending Business</h3>
+          <ul>
+            <li><strong>False Positive (Told Eligible when Not):</strong> Triggers customer complaints, compliance risk, and wasted underwriting effort.</li>
+            <li><strong>False Negative (Told Ineligible when Eligible):</strong> Silent lost business. <u>Neither failure is visible until after the fact.</u></li>
+          </ul>
+        </div>
+
+        <div class="card card-blue">
+          <span class="card-tag" style="color:var(--blue);">3 · Why Generic LLMs Fail</span>
+          <h3>Hallucinated Cut-Offs & Math Errors</h3>
+          <p>Generic LLMs invent credit thresholds, mix stale policy versions, and miscalculate reducing-balance EMI, FOIR, and LTV ratios. A confidently wrong income or LTV cut-off is a regulatory failure, not a UX bug.</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 18px;">
+        <span class="card-tag" style="color:var(--navy);">OUR ARCHITECTURAL THESIS — STRICT NEURO-SYMBOLIC SEPARATION OF RESPONSIBILITIES</span>
+        <div class="grid-4" style="margin-top: 8px;">
+          <div class="card" style="background:#fff;">
+            <span class="card-tag" style="color:var(--blue);">① Semantic NLU + Memory</span>
+            <h3>Natural Intent Routing</h3>
+            <p>Infers product without UI tags (<em>"house/building loan"</em> → Home; <em>"car/scooter/bus"</em> → Auto) & merges profile across turns without re-asking.</p>
+          </div>
+          <div class="card" style="background:#fff;">
+            <span class="card-tag" style="color:var(--purple);">② Versioned Policy RAG</span>
+            <h3>Active-Version Filtering</h3>
+            <p>Clause-level ChromaDB collections queried with <code>where={"version": active}</code> so every answer cites the exact active Rule ID.</p>
+          </div>
+          <div class="card" style="background:#fff;">
+            <span class="card-tag" style="color:var(--emerald);">③ Deterministic Engine</span>
+            <h3>LLM Never Decides</h3>
+            <p>Pure-Python calculators (EMI, FOIR, LTV, Max Loan) + 25 rule evaluators produce 100% deterministic pass/fail decisions.</p>
+          </div>
+          <div class="card" style="background:#fff;">
+            <span class="card-tag" style="color:var(--amber);">④ Governed Delivery</span>
+            <h3>SSE Stream + CI Gate</h3>
+            <p>Sentence-buffered output guardrails, full rule-version audit logging, and Promptfoo CI/CD gates that block regressions.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-emerald">
+          <span class="card-tag" style="color:var(--emerald);">✅ IN SCOPE (IMPLEMENTED END-TO-END)</span>
+          <p>Streaming pre-qualification across <strong>Personal Loan (v1/v2)</strong>, <strong>Home Loan (v1)</strong>, and <strong>Auto Loan (v1)</strong> with grounded Rule-ID citations, What-If scenario simulator, on-demand document checklists, and version-stamped audit logs.</p>
+        </div>
+        <div class="card card-amber">
+          <span class="card-tag" style="color:var(--amber);">🚫 EXPLICIT COMPLIANCE BOUNDARY</span>
+          <p><strong>Never claims final loan approval or sanction.</strong> Outputs are strictly preliminary pre-qualification outcomes: <code>POTENTIALLY_ELIGIBLE</code>, <code>NOT_ELIGIBLE</code>, <code>MANUAL_REVIEW</code>, or <code>INSUFFICIENT_INFORMATION</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="speaker-box">
+        <strong>🎙️ Presenter Track (3 min):</strong> Highlight the core business problem: inconsistent answers across changing policy versions cause either complaints (false positives) or lost business (false negatives). Our key innovation is separating extraction/explanation (LLM) from financial calculation and rule evaluation (Pure Python), backed by metadata-filtered RAG over versioned policies.
+      </div>
+      <div class="slide-footer">
+        <span>LoanAssist v3 · Capstone Project — Banking (03)</span>
+        <span>Policy Corpus: LPQ-PL-2026-01/02 · LPQ-HL-2026-01 · LPQ-AL-2026-01 (40 Citable Clauses)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- SLIDE 02: SOLUTION ARCHITECTURE & STREAMING PIPELINE                  -->
+  <!-- ===================================================================== -->
+  <section class="slide">
+    <div>
+      <div class="slide-header">
+        <div>
+          <div class="eyebrow">CAPSTONE · GENAI & RAG · LOANASSIST V3 · SEGMENT 2 (4 MIN)</div>
+          <h1 class="slide-title">Technical Architecture & Streaming Pipeline</h1>
+          <p class="slide-subtitle">Every component below runs in the repository across 5 health-checked Docker services + Streamlit v3 UI.</p>
+        </div>
+        <div class="slide-num">SLIDE 02</div>
+      </div>
+
+      <div class="card" style="margin-bottom: 18px;">
+        <span class="card-tag" style="color:var(--blue);">REQUEST EXECUTION PIPELINE — POST /chat (SSE STREAMING WITH BACKPRESSURE)</span>
+        <div class="grid-6" style="margin-top: 8px;">
+          <div class="card" style="background:#fff;">
+            <span class="card-tag" style="color:var(--blue);">1 · Input Guard</span>
+            <h3>Boundary Check</h3>
+            <p>Injection blocklist, regex PII scan (PAN, Aadhaar, phone), and domain gate before LLM call.</p>
+          </div>
+          <div class="card" style="background:#fff;">
+            <span class="card-tag" style="color:var(--blue);">2 · Extractor</span>
+            <h3>Profile + Merge</h3>
+            <p>LLM (<code>temp=0</code>) + semantic alias map extracts 18 fields & merges onto <code>prior_profile</code>.</p>
+          </div>
+          <div class="card card-amber">
+            <span class="card-tag" style="color:var(--amber);">3 · Route Gate</span>
+            <h3>Missing / Docs?</h3>
+            <p>If incomplete → Conversation Agent asks 1–2 fields. If doc query → streams checklist.</p>
+          </div>
+          <div class="card card-purple">
+            <span class="card-tag" style="color:var(--purple);">4 · Policy RAG</span>
+            <h3>Versioned Query</h3>
+            <p>ChromaDB per-product collection filtered by <code>where={"version": active}</code>.</p>
+          </div>
+          <div class="card card-emerald">
+            <span class="card-tag" style="color:var(--emerald);">5 · Rules Engine</span>
+            <h3>Math & 25 Rules</h3>
+            <p>Pure-Python EMI, FOIR, LTV, Max Loan + product evaluators → <code>EligibilityResult</code>.</p>
+          </div>
+          <div class="card card-blue">
+            <span class="card-tag" style="color:var(--blue);">6 · SSE & Guard</span>
+            <h3>Sentence Stream</h3>
+            <p><code>asyncio.Queue(20)</code> backpressure + per-sentence Layer 3 guard + JSONL audit.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card" style="padding: 14px;">
+          <span class="card-tag" style="color:var(--navy);">VERSIONED MULTI-PRODUCT RULES ENGINE & RAG CORPUS</span>
+          <table>
+            <thead>
+              <tr>
+                <th>Loan Product & Semantic Aliases</th>
+                <th>Ver.</th>
+                <th>Deterministic Thresholds</th>
+                <th>Rule IDs</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Personal Loan</strong><br><span style="font-size:11px;color:#64748b;">"personal / consumer / cash / salary loan"</span></td>
+                <td><code>v2</code><br><span style="font-size:10px;">(v1 kept)</span></td>
+                <td>Age 21–60 · Income ≥₹25k · Emp ≥12/24m · CIBIL ≥700 · FOIR ≤50% · ₹50k–₹25L (≤30× inc)</td>
+                <td><code>PL-AGE-001</code> to <code>PL-TEN-001</code> (7)</td>
+              </tr>
+              <tr>
+                <td><strong>Home Loan</strong><br><span style="font-size:11px;color:#64748b;">"house / building / flat / mortgage"</span></td>
+                <td><code>v1</code></td>
+                <td>Age 21–70 (at close) · Income ≥₹40k · Emp ≥24/36m (24–35m → Review) · CIBIL ≥700 · FOIR ≤55% · LTV ≤80/85%</td>
+                <td><code>HL-AGE-001</code> to <code>HL-TEN-001</code> (9)</td>
+              </tr>
+              <tr>
+                <td><strong>Auto Loan</strong><br><span style="font-size:11px;color:#64748b;">"car / scooter / bike / bus / EV loan"</span></td>
+                <td><code>v1</code></td>
+                <td>Age 21–65 · Income ≥₹20k · Emp ≥12/24m · CIBIL ≥680 · FOIR ≤50% · On-Road LTV ≤85% new / ≤70% used</td>
+                <td><code>AL-AGE-001</code> to <code>AL-TEN-001</code> (9)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <span class="card-tag" style="color:var(--navy);">OPERATIONAL INFRASTRUCTURE & TYPED SSE CONTRACT</span>
+          <div class="grid-2" style="margin-top: 6px;">
+            <div class="card" style="background:#fff;">
+              <h3>FastAPI Backend (<code>:8001</code>)</h3>
+              <p>Endpoints: <code>/chat</code> (SSE), <code>/scenario</code> (What-If), <code>/audit/{id}</code>, <code>/versions</code>, <code>/health</code>, <code>/metrics</code>.</p>
+            </div>
+            <div class="card" style="background:#fff;">
+              <h3>LiteLLM (<code>:4000</code>) + Qwen (<code>:8090</code>)</h3>
+              <p>Local <code>Qwen2.5-1.5B-Instruct</code> primary server with automatic cloud fallback route on timeout.</p>
+            </div>
+            <div class="card" style="background:#fff;">
+              <h3>Prometheus (<code>:9090</code>) & Grafana (<code>:3000</code>)</h3>
+              <p>Scrapes request counters & latency histograms; pre-provisioned Golden Signals dashboard.</p>
+            </div>
+            <div class="card" style="background:#fff;">
+              <h3>7 Typed SSE Event Payloads</h3>
+              <p><code>token</code> · <code>profile_update</code> · <code>decision</code> · <code>calculations</code> · <code>citations</code> · <code>audit_ref</code> · <code>error</code>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="speaker-box">
+        <strong>🎙️ Presenter Track (4 min):</strong> Explain how streaming backpressure works via <code>asyncio.Queue(maxsize=20)</code> between producer and consumer, and why sentence-level buffering is critical: you cannot run a compliance output check on half a word, so we buffer until sentence punctuation before checking and flushing to the client.
+      </div>
+      <div class="slide-footer">
+        <span>LoanAssist v3 · Technical Architecture</span>
+        <span>Stack: FastAPI 0.115 · ChromaDB 1.5 · LiteLLM · Qwen2.5-1.5B · Streamlit · Prometheus · Grafana</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- SLIDE 03: END-TO-END WORKFLOW & LIVE DEMO SCENARIOS                   -->
+  <!-- ===================================================================== -->
+  <section class="slide">
+    <div>
+      <div class="slide-header">
+        <div>
+          <div class="eyebrow">CAPSTONE · GENAI & RAG · LOANASSIST V3 · SEGMENT 3 (7 MIN)</div>
+          <h1 class="slide-title">End-to-End Multi-Turn Workflow & Demo Scenarios</h1>
+          <p class="slide-subtitle">How natural customer dialogue maps to semantic product routing, profile merging, financial math, and cited decisions.</p>
+        </div>
+        <div class="slide-num">SLIDE 03</div>
+      </div>
+
+      <div class="grid-3" style="margin-bottom: 18px;">
+        <div class="card">
+          <span class="card-tag" style="color:var(--blue);">TURN 1 · SEMANTIC DETECTION & PARTIAL PROFILE</span>
+          <h3>Customer Speaks Naturally</h3>
+          <p style="background:var(--blue-accent);color:#fff;padding:8px 12px;border-radius:8px;margin:8px 0;font-weight:500;">
+            "Hi, I want a <strong>house loan</strong>. I'm 35, salaried for 4 years, earning ₹1,20,000 a month."
+          </p>
+          <ul>
+            <li><strong>Semantic Alias Match:</strong> <code>"house loan" → home_loan</code> without any dropdown tags.</li>
+            <li><strong>Extracted State:</strong> <code>age=35, emp=salaried, dur=48m, income=120000</code>.</li>
+            <li><strong>Conversation Agent:</strong> Identifies 7 missing Home Loan fields and politely asks for the next 2–3 items.</li>
+          </ul>
+        </div>
+
+        <div class="card card-emerald">
+          <span class="card-tag" style="color:var(--emerald);">TURN 2 · CROSS-TURN MERGE & DETERMINISTIC SCORING</span>
+          <h3>Profile Completed → Full Assessment</h3>
+          <p style="background:var(--blue-accent);color:#fff;padding:8px 12px;border-radius:8px;margin:8px 0;font-weight:500;">
+            "CIBIL is 770, existing EMI ₹10k. Buying an apartment worth ₹50L with ₹10L down payment. Need ₹40L for 20 years."
+          </p>
+          <ul>
+            <li><strong>Profile Merge:</strong> Combines Turn 1 + Turn 2 (<code>_merge_profiles</code>) — never re-asks known data.</li>
+            <li><strong>Calculators (8.5%):</strong> EMI = <strong>₹34,713</strong> · FOIR = <strong>37.3%</strong> (≤55%) · LTV = <strong>80.0%</strong> (≤80%).</li>
+            <li><strong>Outcome:</strong> All 9 <code>HL-*</code> rules pass → <code>POTENTIALLY_ELIGIBLE</code> with cited clauses & Audit ID.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="card-tag" style="color:var(--purple);">TURN 3 · ON-DEMAND CHECKLIST & WHAT-IF SIMULATOR</span>
+          <h3>Contextual Follow-Up & Re-Scoring</h3>
+          <p style="background:var(--blue-accent);color:#fff;padding:8px 12px;border-radius:8px;margin:8px 0;font-weight:500;">
+            "What documents do I need to submit for this?"
+          </p>
+          <ul>
+            <li><strong>Clean UI Principle:</strong> Document checklist stays hidden until <code>is_document_request()</code> detects user intent, then streams inline.</li>
+            <li><strong>What-If (<code>POST /scenario</code>):</strong> Overriding down payment to ₹5L (Loan ₹45L → LTV 90%) flips result to <code>NOT_ELIGIBLE</code> citing <code>HL-LTV-001</code> in &lt;15ms.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-tag" style="color:var(--navy);">FOUR DETERMINISTIC OUTCOMES DEMONSTRATED LIVE ACROSS PERSONAL, HOME & AUTO LOANS</span>
+        <div class="grid-4" style="margin-top: 8px;">
+          <div class="card card-emerald">
+            <span class="card-tag" style="color:var(--emerald);">✅ POTENTIALLY_ELIGIBLE</span>
+            <h3>New Car Auto Loan</h3>
+            <p>Age 30, Salaried 2y, ₹60k income, CIBIL 720, On-Road ₹8L, Loan ₹6L for 48m. <strong>LTV 75% (≤85%), FOIR 24.9% (≤50%).</strong> Cites <code>AL-LTV-001</code>, <code>AL-FOIR-001</code>.</p>
+          </div>
+          <div class="card card-red">
+            <span class="card-tag" style="color:var(--red);">❌ NOT_ELIGIBLE</span>
+            <h3>Used Car LTV Breach</h3>
+            <p>Used car On-Road ₹5L, Loan ₹4.5L → <strong>LTV 90% exceeds 70% used-vehicle cap.</strong> Fails <code>AL-LTV-001</code>; explanation states exact down-payment needed.</p>
+          </div>
+          <div class="card card-amber">
+            <span class="card-tag" style="color:var(--amber);">⚠️ MANUAL_REVIEW</span>
+            <h3>Self-Employed Vintage</h3>
+            <p>Home Loan applicant self-employed for <strong>28 months</strong> (falls in 24–35m review band under <code>HL-EMP-001</code>). Routed to human underwriter.</p>
+          </div>
+          <div class="card card-blue">
+            <span class="card-tag" style="color:var(--blue);">ℹ️ INSUFFICIENT_INFO</span>
+            <h3>Scooter Loan Inquiry</h3>
+            <p><em>"I want a scooter loan, age 28, salaried."</em> Auto-detects <code>auto_loan</code> + <code>two_wheeler</code>; asks for income, CIBIL, and on-road price.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="speaker-box">
+        <strong>🎙️ Presenter Track (7 min Live Demo):</strong> Walk through the live Streamlit chat UI. Show (1) natural phrasing without tags, (2) multi-turn memory retention, (3) inline decision card with EMI/FOIR/LTV metric chips, (4) expandable Rule-by-Rule breakdown and Policy Citations, and (5) on-demand document checklist.
+      </div>
+      <div class="slide-footer">
+        <span>LoanAssist v3 · End-to-End Walkthrough & Live Demo</span>
+        <span>UI: Single-Column Professional Chat · Inline Metric Chips · Expandable Rule & Citation Cards</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- SLIDE 04: EVALUATION GATES, SAFETY & AUDITABILITY                     -->
+  <!-- ===================================================================== -->
+  <section class="slide">
+    <div>
+      <div class="slide-header">
+        <div>
+          <div class="eyebrow">CAPSTONE · GENAI & RAG · LOANASSIST V3 · SEGMENT 4 (4 MIN)</div>
+          <h1 class="slide-title">CI/CD Evaluation Gates, 3-Layer Safety & Auditability</h1>
+          <p class="slide-subtitle">Automated regression blocking in GitHub Actions and rule-version capture on every decision.</p>
+        </div>
+        <div class="slide-num">SLIDE 04</div>
+      </div>
+
+      <div class="grid-4" style="margin-bottom: 18px;">
+        <div class="card card-emerald">
+          <span class="card-tag" style="color:var(--emerald);">Unit Test Coverage</span>
+          <div class="kpi-value">80 / 80</div>
+          <p>100% passing Pytest suite (<code>0.20s</code> runtime) across calculators & 25 rules on every push.</p>
+        </div>
+        <div class="card card-blue">
+          <span class="card-tag" style="color:var(--blue);">Promptfoo Eval Suite</span>
+          <div class="kpi-value">15 Gates</div>
+          <p>End-to-end assertions across PL, HL, AL, semantic routing, and prompt injection + 25 labelled cases.</p>
+        </div>
+        <div class="card card-purple">
+          <span class="card-tag" style="color:var(--purple);">Rule Faithfulness</span>
+          <div class="kpi-value">100%</div>
+          <p>Zero hallucinated decisions — rules engine is deterministic; RAG filters active policy version.</p>
+        </div>
+        <div class="card card-amber">
+          <span class="card-tag" style="color:var(--amber);">Merge Protection</span>
+          <div class="kpi-value">Blocked</div>
+          <p>Any failed eligibility assertion or safety check exits non-zero and blocks the GitHub PR merge.</p>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <span class="card-tag" style="color:var(--blue);">1 · TWO-STAGE CI/CD EVAL GATE</span>
+          <h3><code>.github/workflows/eval-gate.yml</code></h3>
+          <ul>
+            <li><strong>Stage 1 — <code>unit-tests</code> (Every Push):</strong> Runs <code>pytest api/tests/</code> across all branches in ~10s without Docker overhead.</li>
+            <li><strong>Stage 2 — <code>eval-gate</code> (Pull Requests):</strong> Ingests ChromaDB policies, boots the Docker stack, waits for <code>/health</code>, and executes <code>scripts/eval-gate.sh</code> (Promptfoo).</li>
+            <li><strong>Blocked Merge Evidence:</strong> Uploads <code>promptfoo-output.json/.html</code> artifacts and blocks PR merge on any accuracy drop.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="card-tag" style="color:var(--purple);">2 · THREE-LAYER SAFETY DEFENCE</span>
+          <h3>Boundary & Mid-Stream Protection</h3>
+          <ul>
+            <li><strong>Layer 1 (Input Guard):</strong> Blocks prompt-injection phrases (<em>"ignore instructions"</em>), masks PII, and enforces domain topic gate.</li>
+            <li><strong>Layer 2 (Grounded LLM):</strong> Versioned prompts (<code>registry.yaml</code> v1/v2) at <code>temperature=0</code>; strictly subordinate to engine output.</li>
+            <li><strong>Layer 3 (Sentence Stream Guard):</strong> Buffers streamed tokens by sentence and strips approval guarantees or leaked PII before SSE flush.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="card-tag" style="color:var(--emerald);">3 · RULE-VERSION AUDIT TRAIL</span>
+          <h3><code>logs/audit.jsonl</code> & <code>GET /audit/{id}</code></h3>
+          <pre style="background:#0f172a;color:#e2e8f0;padding:10px;border-radius:8px;font-size:10.5px;line-height:1.4;overflow-x:auto;margin-top:6px;">{
+  "application_id": "APP-8F92C1A04B12",
+  "product": "personal_loan",
+  "policy_version": "v2",
+  "policy_id": "LPQ-PL-2026-02",
+  "decision": "NOT_ELIGIBLE",
+  "rules_applied": [
+    {"rule_id": "PL-CRD-001", "result": "FAIL"}
+  ],
+  "calculations": {"emi": 16607.3, "foir": 0.43},
+  "rag_sources": [{"doc": "personal_loan_v2.md",
+                   "rule_id": "PL-CRD-001",
+                   "version": "v2"}],
+  "prompt_version": "v1",
+  "latency_ms": 842
+}</pre>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="speaker-box">
+        <strong>🎙️ Presenter Track (4 min):</strong> Highlight how CI/CD evaluation gates and audit logging work together: Promptfoo prevents bad prompts or rule regressions from merging before deployment, while the JSONL audit log records the exact <code>policy_version</code>, <code>policy_id</code>, and rule evaluation trace for every live customer interaction.
+      </div>
+      <div class="slide-footer">
+        <span>LoanAssist v3 · Evaluation, Safety & Auditability</span>
+        <span>Observability: Prometheus /metrics (Counters & Latency Histograms) + Provisioned Grafana Dashboard</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- SLIDE 05: LIMITATIONS, PRODUCTION ROADMAP & RUBRIC ALIGNMENT          -->
+  <!-- ===================================================================== -->
+  <section class="slide">
+    <div>
+      <div class="slide-header">
+        <div>
+          <div class="eyebrow">CAPSTONE · GENAI & RAG · LOANASSIST V3 · SEGMENT 5 (2 MIN + PANEL Q&A)</div>
+          <h1 class="slide-title">Honest Limitations, Production Roadmap & Rubric Alignment</h1>
+          <p class="slide-subtitle">Clear engineering trade-offs in the current release and the path to enterprise banking production.</p>
+        </div>
+        <div class="slide-num">SLIDE 05</div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom: 18px;">
+        <div class="card card-amber">
+          <span class="card-tag" style="color:var(--amber);">⚠️ HONEST LIMITATIONS (WHAT IT DOES NOT DO YET)</span>
+          <ul>
+            <li><strong>In-Memory Session & Idempotency Stores:</strong> <code>_conv_store</code>, <code>_profile_store</code>, and <code>_idem_cache</code> reside in FastAPI process memory (cleared on container restart; single-instance bound).</li>
+            <li><strong>Dual-Place Policy Thresholds:</strong> Switching <code>ACTIVE_PERSONAL_LOAN_VERSION=v2</code> dynamically updates RAG retrieval chunks, whereas <code>rules_engine.py</code> reads thresholds from Python config dicts.</li>
+            <li><strong>Unverified Applicant Inputs:</strong> Uses self-declared income, CIBIL score, and property/vehicle value — no live bureau pull or document OCR.</li>
+            <li><strong>Rule-Based Boundary Guardrails:</strong> Uses deterministic regex and keyword allowlists rather than ML safety classifiers.</li>
+          </ul>
+        </div>
+
+        <div class="card card-emerald">
+          <span class="card-tag" style="color:var(--emerald);">🚀 ENTERPRISE PRODUCTION ROADMAP (NEXT STEPS)</span>
+          <ul>
+            <li><strong>Single Source-of-Truth Policy Schema:</strong> Drive both ChromaDB RAG ingestion and <code>rules_engine.py</code> config thresholds from a single signed YAML/JSON policy file per version.</li>
+            <li><strong>Externalized State & WORM Audit Storage:</strong> Move session/idempotency state to <strong>Redis</strong>, vector search to managed <strong>Qdrant / pgvector</strong>, and audit logs to append-only <strong>PostgreSQL + S3 Object Lock</strong>.</li>
+            <li><strong>Core Banking & Bureau Integration:</strong> Integrate soft-pull CIBIL API, Account Aggregator (AA) income verification, and LOS lead-handoff webhooks.</li>
+            <li><strong>GPU Serving & Neural Guardrails:</strong> Serve 7B/8B models on <strong>vLLM</strong> with Microsoft Presidio NER and Llama-Guard 3 classifiers.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-tag" style="color:var(--navy);">CAPSTONE EVALUATION RUBRIC SCORECARD (100% ALIGNMENT)</span>
+        <div class="grid-3" style="margin-top: 8px;">
+          <div class="card" style="background:#fff;">
+            <span class="card-tag" style="color:var(--blue);">Functionality · 25%</span>
+            <h3>Complete End-to-End System</h3>
+            <p>Works across Personal, Home & Auto Loans with SSE streaming, cross-turn memory, What-If simulator, on-demand checklists, and audit lookup.</p>
+          </div>
+          <div class="card" style="background:#fff;">
+            <span class="card-tag" style="color:var(--blue);">Technical Depth · 20%</span>
+            <h3>Production Engineering Patterns</h3>
+            <p>Bounded-queue SSE backpressure, version-filtered ChromaDB RAG, LiteLLM failover routing, Prometheus metrics & Grafana dashboards.</p>
+          </div>
+          <div class="card" style="background:#fff;">
+            <span class="card-tag" style="color:var(--blue);">Evaluation & Safety · 15%</span>
+            <h3>Rigorous Gates & Guardrails</h3>
+            <p>80 unit tests + 15 Promptfoo CI merge gates + 25 labelled benchmark cases; 3-layer guardrails with sentence-buffered streaming inspection.</p>
+          </div>
+          <div class="card" style="background:#fff;">
+            <span class="card-tag" style="color:var(--blue);">Usefulness · 15%</span>
+            <h3>Real Banking Business Value</h3>
+            <p>Solves call-centre pre-qualification inconsistency, preventing both customer complaints and lost lending business with full auditability.</p>
+          </div>
+          <div class="card" style="background:#fff;">
+            <span class="card-tag" style="color:var(--blue);">Novelty · 15%</span>
+            <h3>Neuro-Symbolic Framing</h3>
+            <p>Strict LLM/Engine separation (LLM extracts & explains; Python calculates & decides) + tag-free semantic routing + cross-turn profile merge.</p>
+          </div>
+          <div class="card" style="background:#fff;">
+            <span class="card-tag" style="color:var(--blue);">Presentation · 10%</span>
+            <h3>Structured for Panel Q&A</h3>
+            <p>Mapped directly to the 20-minute capstone split with transparent trade-offs, live interactive demo flows, and verifiable metrics.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="speaker-box">
+        <strong>🎙️ Presenter Track (2 min + 10 min Q&A):</strong> Close by proactively sharing the two key architectural trade-offs (in-memory session store and Python config thresholds vs. RAG env version). Panelists reward teams that know exactly where prototype shortcuts sit and how to harden them for production.
+      </div>
+      <div class="slide-footer">
+        <span>LoanAssist v3 · Summary, Limitations & Production Roadmap</span>
+        <span>Ready for Live Demo & Panel Q&A</span>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    let idx = 0;
+    const slides = document.querySelectorAll('.slide');
+    const tabs = document.querySelectorAll('.tab-btn');
+    const counter = document.getElementById('counter');
+
+    function showSlide(n) {
+      idx = (n + slides.length) % slides.length;
+      slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+      tabs.forEach((t, i) => t.classList.toggle('active', i === idx));
+      counter.textContent = (idx + 1) + ' / ' + slides.length;
+    }
+    function next() { showSlide(idx + 1); }
+    function prev() { showSlide(idx - 1); }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') next();
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') prev();
+    });
+  </script>
+</body>
+</html>

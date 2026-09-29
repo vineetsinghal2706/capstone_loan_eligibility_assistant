@@ -1,0 +1,491 @@
+[
+  {
+    "id": "TC-PL-001",
+    "description": "Personal loan — fully eligible salaried applicant",
+    "product": "personal_loan",
+    "profile": {
+      "loan_type": "personal_loan",
+      "age": 35,
+      "employment_type": "salaried",
+      "monthly_net_income": 75000,
+      "employment_duration_months": 36,
+      "credit_score": 760,
+      "existing_emi": 5000,
+      "requested_amount": 500000,
+      "requested_tenure_months": 36
+    },
+    "expected_decision": "POTENTIALLY_ELIGIBLE",
+    "expected_failed_rules": []
+  },
+  {
+    "id": "TC-PL-002",
+    "description": "Personal loan — not eligible, credit score too low (680 < 700)",
+    "product": "personal_loan",
+    "profile": {
+      "loan_type": "personal_loan",
+      "age": 32,
+      "employment_type": "salaried",
+      "monthly_net_income": 60000,
+      "employment_duration_months": 24,
+      "credit_score": 680,
+      "existing_emi": 5000,
+      "requested_amount": 400000,
+      "requested_tenure_months": 36
+    },
+    "expected_decision": "NOT_ELIGIBLE",
+    "expected_failed_rules": ["PL-CRD-001"]
+  },
+  {
+    "id": "TC-PL-003",
+    "description": "Personal loan — not eligible, FOIR too high (58% > 50%)",
+    "product": "personal_loan",
+    "profile": {
+      "loan_type": "personal_loan",
+      "age": 40,
+      "employment_type": "salaried",
+      "monthly_net_income": 50000,
+      "employment_duration_months": 48,
+      "credit_score": 720,
+      "existing_emi": 20000,
+      "requested_amount": 500000,
+      "requested_tenure_months": 36
+    },
+    "expected_decision": "NOT_ELIGIBLE",
+    "expected_failed_rules": ["PL-FOIR-001"]
+  },
+  {
+    "id": "TC-PL-004",
+    "description": "Personal loan — not eligible, income below minimum (₹20k < ₹25k)",
+    "product": "personal_loan",
+    "profile": {
+      "loan_type": "personal_loan",
+      "age": 28,
+      "employment_type": "salaried",
+      "monthly_net_income": 20000,
+      "employment_duration_months": 18,
+      "credit_score": 710,
+      "existing_emi": 0,
+      "requested_amount": 200000,
+      "requested_tenure_months": 24
+    },
+    "expected_decision": "NOT_ELIGIBLE",
+    "expected_failed_rules": ["PL-INC-001"]
+  },
+  {
+    "id": "TC-PL-005",
+    "description": "Personal loan — not eligible, age above max (age=62)",
+    "product": "personal_loan",
+    "profile": {
+      "loan_type": "personal_loan",
+      "age": 62,
+      "employment_type": "salaried",
+      "monthly_net_income": 80000,
+      "employment_duration_months": 60,
+      "credit_score": 780,
+      "existing_emi": 0,
+      "requested_amount": 500000,
+      "requested_tenure_months": 24
+    },
+    "expected_decision": "NOT_ELIGIBLE",
+    "expected_failed_rules": ["PL-AGE-001"]
+  },
+  {
+    "id": "TC-PL-006",
+    "description": "Personal loan — insufficient information, missing credit score",
+    "product": "personal_loan",
+    "profile": {
+      "loan_type": "personal_loan",
+      "age": 30,
+      "employment_type": "salaried",
+      "monthly_net_income": 55000,
+      "employment_duration_months": 24,
+      "existing_emi": 5000,
+      "requested_amount": 400000,
+      "requested_tenure_months": 36
+    },
+    "expected_decision": "INSUFFICIENT_INFORMATION",
+    "expected_failed_rules": []
+  },
+  {
+    "id": "TC-PL-007",
+    "description": "Personal loan — boundary: exactly at minimum income (₹25,000)",
+    "product": "personal_loan",
+    "profile": {
+      "loan_type": "personal_loan",
+      "age": 30,
+      "employment_type": "salaried",
+      "monthly_net_income": 25000,
+      "employment_duration_months": 18,
+      "credit_score": 705,
+      "existing_emi": 0,
+      "requested_amount": 200000,
+      "requested_tenure_months": 36
+    },
+    "expected_decision": "POTENTIALLY_ELIGIBLE",
+    "expected_failed_rules": []
+  },
+  {
+    "id": "TC-PL-008",
+    "description": "Personal loan — not eligible, loan amount exceeds 30× income",
+    "product": "personal_loan",
+    "profile": {
+      "loan_type": "personal_loan",
+      "age": 35,
+      "employment_type": "salaried",
+      "monthly_net_income": 30000,
+      "employment_duration_months": 24,
+      "credit_score": 720,
+      "existing_emi": 0,
+      "requested_amount": 1000000,
+      "requested_tenure_months": 60
+    },
+    "expected_decision": "NOT_ELIGIBLE",
+    "expected_failed_rules": ["PL-AMT-001"]
+  },
+  {
+    "id": "TC-HL-001",
+    "description": "Home loan — fully eligible salaried applicant",
+    "product": "home_loan",
+    "profile": {
+      "loan_type": "home_loan",
+      "age": 35,
+      "employment_type": "salaried",
+      "monthly_net_income": 120000,
+      "employment_duration_months": 48,
+      "credit_score": 770,
+      "existing_emi": 10000,
+      "requested_amount": 4000000,
+      "requested_tenure_months": 240,
+      "property_value": 5000000,
+      "down_payment": 1000000,
+      "property_type": "apartment",
+      "property_location": "Mumbai"
+    },
+    "expected_decision": "POTENTIALLY_ELIGIBLE",
+    "expected_failed_rules": []
+  },
+  {
+    "id": "TC-HL-002",
+    "description": "Home loan — not eligible, LTV too high (90% > 80% for loan > 30L)",
+    "product": "home_loan",
+    "profile": {
+      "loan_type": "home_loan",
+      "age": 35,
+      "employment_type": "salaried",
+      "monthly_net_income": 150000,
+      "employment_duration_months": 48,
+      "credit_score": 770,
+      "existing_emi": 10000,
+      "requested_amount": 4500000,
+      "requested_tenure_months": 240,
+      "property_value": 5000000,
+      "down_payment": 500000,
+      "property_type": "apartment",
+      "property_location": "Delhi"
+    },
+    "expected_decision": "NOT_ELIGIBLE",
+    "expected_failed_rules": ["HL-LTV-001"]
+  },
+  {
+    "id": "TC-HL-003",
+    "description": "Home loan — not eligible, commercial property",
+    "product": "home_loan",
+    "profile": {
+      "loan_type": "home_loan",
+      "age": 40,
+      "employment_type": "salaried",
+      "monthly_net_income": 100000,
+      "employment_duration_months": 36,
+      "credit_score": 740,
+      "existing_emi": 5000,
+      "requested_amount": 3000000,
+      "requested_tenure_months": 180,
+      "property_value": 5000000,
+      "down_payment": 2000000,
+      "property_type": "commercial",
+      "property_location": "Bangalore"
+    },
+    "expected_decision": "NOT_ELIGIBLE",
+    "expected_failed_rules": ["HL-PROP-001"]
+  },
+  {
+    "id": "TC-HL-004",
+    "description": "Home loan — manual review, self-employed 28 months (24–35 range)",
+    "product": "home_loan",
+    "profile": {
+      "loan_type": "home_loan",
+      "age": 38,
+      "employment_type": "self_employed",
+      "monthly_net_income": 150000,
+      "employment_duration_months": 28,
+      "credit_score": 760,
+      "existing_emi": 15000,
+      "requested_amount": 5000000,
+      "requested_tenure_months": 240,
+      "property_value": 7000000,
+      "down_payment": 2000000,
+      "property_type": "villa",
+      "property_location": "Pune"
+    },
+    "expected_decision": "MANUAL_REVIEW",
+    "expected_failed_rules": []
+  },
+  {
+    "id": "TC-HL-005",
+    "description": "Home loan — insufficient info, missing property type",
+    "product": "home_loan",
+    "profile": {
+      "loan_type": "home_loan",
+      "age": 35,
+      "employment_type": "salaried",
+      "monthly_net_income": 100000,
+      "employment_duration_months": 36,
+      "credit_score": 750,
+      "existing_emi": 10000,
+      "requested_amount": 4000000,
+      "requested_tenure_months": 240,
+      "property_value": 5000000,
+      "down_payment": 1000000
+    },
+    "expected_decision": "INSUFFICIENT_INFORMATION",
+    "expected_failed_rules": []
+  },
+  {
+    "id": "TC-HL-006",
+    "description": "Home loan — not eligible, loan closes after age 70 (age=55, tenure=360m → age at close=85)",
+    "product": "home_loan",
+    "profile": {
+      "loan_type": "home_loan",
+      "age": 55,
+      "employment_type": "salaried",
+      "monthly_net_income": 200000,
+      "employment_duration_months": 60,
+      "credit_score": 800,
+      "existing_emi": 20000,
+      "requested_amount": 5000000,
+      "requested_tenure_months": 360,
+      "property_value": 7000000,
+      "down_payment": 2000000,
+      "property_type": "apartment",
+      "property_location": "Chennai"
+    },
+    "expected_decision": "NOT_ELIGIBLE",
+    "expected_failed_rules": ["HL-AGE-001"]
+  },
+  {
+    "id": "TC-PL-009",
+    "description": "Personal loan — boundary: minimum age 21",
+    "product": "personal_loan",
+    "profile": {
+      "loan_type": "personal_loan",
+      "age": 21,
+      "employment_type": "salaried",
+      "monthly_net_income": 30000,
+      "employment_duration_months": 13,
+      "credit_score": 710,
+      "existing_emi": 0,
+      "requested_amount": 150000,
+      "requested_tenure_months": 24
+    },
+    "expected_decision": "POTENTIALLY_ELIGIBLE",
+    "expected_failed_rules": []
+  },
+  {
+    "id": "TC-PL-010",
+    "description": "Personal loan — not eligible, no fields provided (only loan_type)",
+    "product": "personal_loan",
+    "profile": {
+      "loan_type": "personal_loan"
+    },
+    "expected_decision": "INSUFFICIENT_INFORMATION",
+    "expected_failed_rules": []
+  },
+  {
+    "id": "TC-HL-007",
+    "description": "Home loan — eligible, residential house property type",
+    "product": "home_loan",
+    "profile": {
+      "loan_type": "home_loan",
+      "age": 40,
+      "employment_type": "salaried",
+      "monthly_net_income": 120000,
+      "employment_duration_months": 48,
+      "credit_score": 750,
+      "existing_emi": 10000,
+      "requested_amount": 3000000,
+      "requested_tenure_months": 240,
+      "property_value": 4000000,
+      "down_payment": 1000000,
+      "property_type": "residential_house",
+      "property_location": "Hyderabad"
+    },
+    "expected_decision": "POTENTIALLY_ELIGIBLE",
+    "expected_failed_rules": []
+  },
+  {
+    "id": "TC-PL-011",
+    "description": "Personal loan — policy version v2 scenario: income 22k (passes v2 22k threshold, fails v1 25k)",
+    "product": "personal_loan",
+    "policy_version": "v2",
+    "profile": {
+      "loan_type": "personal_loan",
+      "age": 28,
+      "employment_type": "salaried",
+      "monthly_net_income": 23000,
+      "employment_duration_months": 18,
+      "credit_score": 685,
+      "existing_emi": 0,
+      "requested_amount": 200000,
+      "requested_tenure_months": 36
+    },
+    "expected_decision": "POTENTIALLY_ELIGIBLE",
+    "note": "Under policy v1 this would be NOT_ELIGIBLE (income 23k < 25k, credit 685 < 700). Under v2 both pass."
+  },
+  {
+    "id": "TC-PL-012",
+    "description": "Personal loan — FOIR edge case: exactly 50% FOIR",
+    "product": "personal_loan",
+    "profile": {
+      "loan_type": "personal_loan",
+      "age": 35,
+      "employment_type": "salaried",
+      "monthly_net_income": 60000,
+      "employment_duration_months": 24,
+      "credit_score": 720,
+      "existing_emi": 0,
+      "requested_amount": 500000,
+      "requested_tenure_months": 36
+    },
+    "expected_decision": "POTENTIALLY_ELIGIBLE",
+    "note": "EMI ~₹16,607, FOIR=16607/60000=27.7% — well within 50%"
+  },
+  {
+    "id": "TC-HL-008",
+    "description": "Home loan — boundary LTV: loan exactly 85% of 30L property (passes for loan ≤ 30L)",
+    "product": "home_loan",
+    "profile": {
+      "loan_type": "home_loan",
+      "age": 35,
+      "employment_type": "salaried",
+      "monthly_net_income": 100000,
+      "employment_duration_months": 30,
+      "credit_score": 750,
+      "existing_emi": 5000,
+      "requested_amount": 2550000,
+      "requested_tenure_months": 240,
+      "property_value": 3000000,
+      "down_payment": 450000,
+      "property_type": "apartment",
+      "property_location": "Kolkata"
+    },
+    "expected_decision": "POTENTIALLY_ELIGIBLE",
+    "note": "LTV=2550000/3000000=85% which is the limit for loans ≤ 30L"
+  },
+  {
+    "id": "TC-AL-001",
+    "description": "Auto loan — fully eligible salaried applicant for new car",
+    "product": "auto_loan",
+    "profile": {
+      "loan_type": "auto_loan",
+      "age": 30,
+      "employment_type": "salaried",
+      "monthly_net_income": 60000,
+      "employment_duration_months": 24,
+      "credit_score": 720,
+      "existing_emi": 0,
+      "requested_amount": 600000,
+      "requested_tenure_months": 48,
+      "vehicle_type": "new",
+      "on_road_price": 800000,
+      "vehicle_category": "four_wheeler"
+    },
+    "expected_decision": "POTENTIALLY_ELIGIBLE",
+    "expected_failed_rules": []
+  },
+  {
+    "id": "TC-AL-002",
+    "description": "Auto loan — not eligible, LTV exceeds 70% for used car (80% > 70%)",
+    "product": "auto_loan",
+    "profile": {
+      "loan_type": "auto_loan",
+      "age": 35,
+      "employment_type": "salaried",
+      "monthly_net_income": 70000,
+      "employment_duration_months": 36,
+      "credit_score": 750,
+      "existing_emi": 0,
+      "requested_amount": 400000,
+      "requested_tenure_months": 36,
+      "vehicle_type": "used",
+      "vehicle_age_years": 4,
+      "on_road_price": 500000,
+      "vehicle_category": "four_wheeler"
+    },
+    "expected_decision": "NOT_ELIGIBLE",
+    "expected_failed_rules": ["AL-LTV-001"]
+  },
+  {
+    "id": "TC-AL-003",
+    "description": "Auto loan — not eligible, credit score below 680 (650 < 680)",
+    "product": "auto_loan",
+    "profile": {
+      "loan_type": "auto_loan",
+      "age": 28,
+      "employment_type": "salaried",
+      "monthly_net_income": 50000,
+      "employment_duration_months": 18,
+      "credit_score": 650,
+      "existing_emi": 0,
+      "requested_amount": 300000,
+      "requested_tenure_months": 36,
+      "vehicle_type": "new",
+      "on_road_price": 400000,
+      "vehicle_category": "four_wheeler"
+    },
+    "expected_decision": "NOT_ELIGIBLE",
+    "expected_failed_rules": ["AL-CRD-001"]
+  },
+  {
+    "id": "TC-AL-004",
+    "description": "Auto loan — eligible two-wheeler loan",
+    "product": "auto_loan",
+    "profile": {
+      "loan_type": "auto_loan",
+      "age": 25,
+      "employment_type": "salaried",
+      "monthly_net_income": 35000,
+      "employment_duration_months": 14,
+      "credit_score": 710,
+      "existing_emi": 0,
+      "requested_amount": 100000,
+      "requested_tenure_months": 24,
+      "vehicle_type": "new",
+      "on_road_price": 130000,
+      "vehicle_category": "two_wheeler"
+    },
+    "expected_decision": "POTENTIALLY_ELIGIBLE",
+    "expected_failed_rules": []
+  },
+  {
+    "id": "TC-AL-005",
+    "description": "Auto loan — not eligible, used vehicle older than 10 years",
+    "product": "auto_loan",
+    "profile": {
+      "loan_type": "auto_loan",
+      "age": 42,
+      "employment_type": "salaried",
+      "monthly_net_income": 80000,
+      "employment_duration_months": 48,
+      "credit_score": 760,
+      "existing_emi": 0,
+      "requested_amount": 250000,
+      "requested_tenure_months": 36,
+      "vehicle_type": "used",
+      "vehicle_age_years": 12,
+      "on_road_price": 400000,
+      "vehicle_category": "four_wheeler"
+    },
+    "expected_decision": "NOT_ELIGIBLE",
+    "expected_failed_rules": ["AL-VEH-001"]
+  }
+]

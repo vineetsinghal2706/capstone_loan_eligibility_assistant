@@ -1,0 +1,79 @@
+# LiteLLM proxy configuration — ClaimAssist v2 (Session 7)
+#
+# One OpenAI-compatible endpoint in (http://localhost:4000/v1),
+# any provider out. Clients never learn which provider answered.
+
+model_list:
+  # ---- LOCAL PATH (works offline) -----------------------------------------
+  # The Qwen container speaks the OpenAI protocol, so to LiteLLM it is just
+  # another "openai" provider with a custom api_base.
+  - model_name: qwen-local
+    litellm_params:
+      model: openai/qwen-local          # provider/model-id sent upstream
+      api_base: http://model:8090/v1    # compose service name, not localhost
+      api_key: local                    # any string — the shim ignores it
+
+
+  - model_name: openrouter-mini
+    litellm_params:
+      model: openrouter/openai/gpt-4o-mini
+      api_key: os.environ/OPENROUTER_API_KEY
+      drop_params: true
+
+  # ---- CLOUD PATH (optional) — uncomment ONE or more + set its env keys ----
+  # OpenAI — needs OPENAI_API_KEY in .env
+  # - model_name: gpt-4o-mini
+  #   litellm_params:
+  #     model: openai/gpt-4o-mini
+  #     api_key: os.environ/OPENAI_API_KEY
+
+  # Azure OpenAI — needs AZURE_API_KEY + AZURE_API_BASE (+ your deployment name)
+  # - model_name: gpt-4o-mini-azure
+  #   litellm_params:
+  #     model: azure/<your-deployment-name>
+  #     api_base: os.environ/AZURE_API_BASE
+  #     api_key: os.environ/AZURE_API_KEY
+  #     api_version: "2024-06-01"
+
+  # AWS Bedrock — needs AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY + AWS_REGION_NAME
+  # - model_name: claude-3-haiku
+  #   litellm_params:
+  #     model: bedrock/anthropic.claude-3-haiku-20240307-v1:0
+  #     aws_region_name: os.environ/AWS_REGION_NAME
+
+  # GCP Vertex AI — needs VERTEXAI_PROJECT + VERTEXAI_LOCATION
+  #                 + GOOGLE_APPLICATION_CREDENTIALS (service-account JSON path)
+  # - model_name: gemini-flash
+  #   litellm_params:
+  #     model: vertex_ai/gemini-1.5-flash
+  #     vertex_project: os.environ/VERTEXAI_PROJECT
+  #     vertex_location: os.environ/VERTEXAI_LOCATION
+
+router_settings:
+  # If qwen-local fails (container down, timeout), route the SAME request to
+  # openrouter-mini — provided OPENROUTER_API_KEY is set in .env.
+  # Without a cloud key, LiteLLM retries and then returns a clean error.
+  fallbacks: [{"qwen-local": ["openrouter-mini"]}]
+  num_retries: 2
+
+# ---- Cost-based routing (discussion, Step 5) --------------------------------
+# When several deployments share one model_name, the router can pick by price:
+#
+#   router_settings:
+#     routing_strategy: cost-based-routing
+#
+# LiteLLM knows per-token prices from its bundled price map
+# (model_prices_and_context_window.json, refreshed with each release); for
+# self-hosted models you declare your own economics on the entry:
+#
+#   litellm_params:
+#     input_cost_per_token: 0.0000004
+#     output_cost_per_token: 0.0000012
+#
+# The same price map powers spend logging and budgets: start the proxy with a
+# database and LITELLM_MASTER_KEY, then /key/generate can attach max_budget
+# per team or per key, and /spend/logs reports cost per request.
+
+general_settings:
+  # Requires Authorization: Bearer $LITELLM_MASTER_KEY and enables LiteLLM Admin UI login
+  master_key: os.environ/LITELLM_MASTER_KEY

@@ -1,0 +1,8 @@
+# Prometheus scrape configuration — the "meter reader" schedule.
+global:
+  scrape_interval: 5s          # short interval for a lab; 15-60s is typical in prod
+
+scrape_configs:
+  - job_name: llm
+    static_configs:
+      - targets: ["api:8001"]  # compose service name; endpoint /metrics is implied

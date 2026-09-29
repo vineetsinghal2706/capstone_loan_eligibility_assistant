@@ -1,0 +1,4 @@
+# ClaimAssist UI — runs on the host (not containerised)
+streamlit==1.41.1
+requests==2.32.3
+itsdangerous>=2.1.2

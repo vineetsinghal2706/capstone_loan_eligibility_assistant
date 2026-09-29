@@ -1,0 +1,118 @@
+# docker-compose.yml — ClaimAssist v3 (Session 8)
+#   model   :8090  local Qwen with an OpenAI-compatible API (llm-server:openai)
+#   litellm :4000  the provider-abstraction proxy (v2, unchanged)
+#   api     :8000  ClaimAssist API v3 — RAG citations + /intake
+#
+# chroma is EMBEDDED in the api process — there is no separate vector-store
+# container. The persistent index lives in ./rag/chroma on the host (written
+# by `python rag/ingest.py`, read by the api via a bind mount). In production
+# this becomes a vector database service shared by replicas.
+#
+# The Streamlit UI runs on the host (streamlit run ui/chat_app.py, :8501).
+services:
+  model:
+    build:
+      context: ./model_server
+      args:
+        HOST_UID: ${HOST_UID:-1000}
+        HOST_GID: ${HOST_GID:-1000}
+    image: llm-server:openai
+    container_name: loanassist-model
+    ports:
+      - "8090:8090"
+    volumes:
+      - hf_cache:/home/appuser/.cache/huggingface   # weights survive recreation
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 30
+      start_period: 180s   # first start downloads ~1 GB of weights
+
+  litellm:
+    image: ghcr.io/berriai/litellm:main-stable
+    container_name: loanassist-litellm
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./litellm:/app/litellm:ro
+    command: ["--config", "/app/litellm/config.yaml", "--port", "4000"]
+    env_file:
+      - .env                        # cloud keys (VISION_MODEL cloud path), if set
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-master-key-loanassist}
+    depends_on:
+      - model
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness', timeout=3)"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  api:
+    build:
+      context: ./api
+      args:
+        HOST_UID: ${HOST_UID:-1000}
+        HOST_GID: ${HOST_GID:-1000}
+    image: loanassist-api:v3
+    container_name: loanassist-api
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./rag:/app/data:ro          # loan policies + samples, read-only
+      - ./rag/chroma:/app/rag/chroma # the persistent chroma index (rw)
+      - chroma_cache:/home/appuser/.cache/chroma  # ~80 MB ONNX embed model, once
+      - ./prompts:/app/prompts:ro
+      - ./api/app.py:/app/app.py:ro
+      - ./api/profile_extractor.py:/app/profile_extractor.py:ro
+      - ./api/rules_engine.py:/app/rules_engine.py:ro
+      - ./logs:/app/logs
+    env_file:
+      - .env
+    environment:
+      LLM_BASE_URL: http://litellm:4000/v1   # v2 wiring: everything via the proxy
+      LLM_API_KEY: ${LITELLM_MASTER_KEY:-sk-master-key-loanassist}
+      LLM_MODEL: ${LLM_MODEL:-openrouter-mini}
+      # Vision intake uses OpenRouter by default (set OPENROUTER_API_KEY in .env).
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      # host.docker.internal reaches the Langfuse stack on the host port 3005
+      LANGFUSE_HOST: ${LANGFUSE_HOST:-http://host.docker.internal:3005}
+      CHROMA_DIR: /app/rag/chroma
+      PROMPT_VERSION: ${PROMPT_VERSION}
+    depends_on:
+      litellm:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    volumes:
+      # directory mount (not single-file) — see Session 3 NFS lesson
+      - ./prometheus:/etc/prometheus:ro
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+volumes:
+  hf_cache:
+  chroma_cache:

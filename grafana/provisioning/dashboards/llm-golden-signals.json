@@ -1,0 +1,56 @@
+{
+  "uid": "llm-golden",
+  "title": "LLM Service — Golden Signals",
+  "schemaVersion": 39,
+  "refresh": "10s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Traffic — requests per second",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prom" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(http_requests_total[1m]))",
+          "legendFormat": "req/s"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Latency — p95 of /chat (seconds)",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prom" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum(rate(llm_request_latency_seconds_bucket{endpoint=\"/chat\"}[5m])) by (le))",
+          "legendFormat": "p95"
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.50, sum(rate(llm_request_latency_seconds_bucket{endpoint=\"/chat\"}[5m])) by (le))",
+          "legendFormat": "p50"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Errors — % of requests returning 4xx/5xx",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prom" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * sum(rate(http_requests_total{status=~\"4..|5..\"}[1m])) / sum(rate(http_requests_total[1m]))",
+          "legendFormat": "error %"
+        }
+      ]
+    }
+  ]
+}
